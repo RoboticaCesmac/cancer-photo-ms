@@ -6,6 +6,8 @@
 
 <p>Adicione o seu modelo criado com o Keras na pasta <b>modelo-treinado</b>. Um modelo de teste pode ser encontrado no link: <a href="http://cwg.services/cesmac/cancer-bucal/modelo-treinado.tar">Modelo Reconhecimento - Elefante e Girafa</a></p>
 
+<p>No repositório <a href="https://github.com/CarlosWGama/py-ts-img-classificacao-binaria">CLassificação Binária</a> é possível encontrar o script para treinar algoritmo de classifcação de imagens binárias</p>
+
 <p>Enviar o campo image via POST para <b>/image</b></p>
 
 <p>O campo image pode ser:</p>

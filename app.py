@@ -8,7 +8,6 @@ from tensorflow import keras
 import requests
 import base64
 import io
-model = keras.models.load_model('modelo-treinado')
 
 def select_image(filename):
     # load image from file
@@ -30,8 +29,12 @@ app = Flask(__name__)
 def welcome():
     return 'Bem vindo a API de Reconhecimento de imagens do Projeto de Mestrado do CESMAC!'
 
-@app.route('/image', methods=["POST"])
-def analyse():
+@app.route('/<type>', methods=["POST"])
+def analyse(type):
+
+    if (type not in ['cancer', 'leucoplasia']):
+        return jsonify("Acesso negado")
+
     data = request.json
     image = data['image']
 
@@ -39,23 +42,24 @@ def analyse():
     image = np.array(list(image)) / 255.0  ## convertendo de lista para array
 
     #### Recupera o modelo treinado
+    model = keras.models.load_model(f'modelo-treinado/modelo_{type}.h5')
 
     results = model(np.array([image]))
     result = results[0].numpy()    
     #K.clear_session() #Libera espaço na memoria
 
     print(result)
-    response = {"value":0, "acc":0, "animal": ""}
+    response = {"value":0, "acc":0, "value_name": ""}
     print('----------------------------------')
     print(result[0])
     print(result[1])
     if (result[0] > result[1]):
         response["value"] = "0"
-        response["value_name"] = "Não possui câncer"
+        response["value_name"] = "Negativo"
         response["acc"] = str(result[0])
     else:
         response["value"] = "1"
-        response["value_name"] = "Pode ter câncer"
+        response["value_name"] = "Positivo"
         response["acc"] = str(result[1])
 
     return jsonify(response)

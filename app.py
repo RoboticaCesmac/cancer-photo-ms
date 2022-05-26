@@ -2,12 +2,14 @@ from flask import Flask, request, jsonify
 from PIL import Image
 from os import listdir
 from os.path import isdir
+import gc
 import numpy as np
 from tensorflow import keras
 # from keras import backend as K
 import requests
 import base64
 import io
+from keras import backend as K
 
 def select_image(filename):
     # load image from file
@@ -20,6 +22,10 @@ def select_image(filename):
     image = image.resize((150,150))
     # convert to array
     return np.asarray(image)
+
+def typeName(type):
+    if (type == 'cancer'): return 'Câncer'
+    if (type == 'leucoplasia'): return 'Leucoplasia'
 
 ###########################################
 
@@ -51,8 +57,11 @@ def analyse(type):
     print(result)
     response = {"value":0, "acc":0, "value_name": ""}
     print('----------------------------------')
+    print(type)
     print(result[0])
     print(result[1])
+    response["type"] = typeName(type)
+    
     if (result[0] > result[1]):
         response["value"] = "0"
         response["value_name"] = "Negativo"
@@ -62,7 +71,16 @@ def analyse(type):
         response["value_name"] = "Positivo"
         response["acc"] = str(result[1])
 
+
+
+
+    K.clear_session()
+    
+    del model
+    gc.collect()
+    
     return jsonify(response)
 
 if __name__ == '__main__':
+    #flask run --host=0.0.0.0
     app.run(host='0.0.0.0')
